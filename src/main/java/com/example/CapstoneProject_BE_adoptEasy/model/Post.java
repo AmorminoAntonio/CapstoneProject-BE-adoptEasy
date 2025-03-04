@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name = "posts")
@@ -19,7 +20,7 @@ public class Post {
     private long id_post;
 
     @Column(nullable = false)
-    private LocalDateTime publishDate;
+    private LocalDate publishDate;
 
     @Column(nullable = false)
     private String title;
@@ -34,7 +35,7 @@ public class Post {
     private PostStatusType status;
 
     @Column(nullable = true)
-    private LocalDateTime lastModified;
+    private LocalDate lastModified;
 
     @Column(nullable = false)
     private Boolean visible;

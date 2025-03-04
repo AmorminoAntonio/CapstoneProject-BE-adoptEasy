@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class Animale {
     private String breed;
 
     @Column(nullable = false)
-    private LocalDateTime foundDate;
+    private LocalDate foundDate;
 
     @Column(nullable = false)
     private String description;
@@ -36,7 +37,7 @@ public class Animale {
     private AnimalStatusType status;
 
     @Column(nullable = false)
-    private LocalDateTime availableSince;
+    private LocalDate availableSince;
 
     @Column(nullable = false)
     private String photo;

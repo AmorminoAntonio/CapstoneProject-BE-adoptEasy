@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name = "adozioni")
@@ -20,11 +21,11 @@ public class Adozione {
 
     //data di inizio pratica di adozione
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     //data fine processo di adozione (presa dell'animale post convalida documenti utente)
     @Column(nullable = false)
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Column(nullable = false)
     private String adoptionNotes;

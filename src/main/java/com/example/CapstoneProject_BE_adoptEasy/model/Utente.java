@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -19,6 +19,9 @@ public class Utente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id_user;
+
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false)
     private String firstName;
@@ -33,7 +36,7 @@ public class Utente {
     private String password;
 
     @Column(nullable = false)
-    private LocalDateTime registrationDate;
+    private LocalDate registrationDate;
 
     @Column(unique = true, nullable = false)
     private String phone;
@@ -44,7 +47,6 @@ public class Utente {
     @Enumerated(EnumType.STRING)
     private RoleType role;
 
-    @Column
     private String avatarUtente;
 
     @OneToMany(mappedBy = "utente") // volontario
