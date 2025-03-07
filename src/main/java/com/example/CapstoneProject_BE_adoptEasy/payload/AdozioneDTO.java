@@ -4,18 +4,20 @@ import com.example.CapstoneProject_BE_adoptEasy.enumerated.AdoptionStatusType;
 import com.example.CapstoneProject_BE_adoptEasy.model.Animale;
 import com.example.CapstoneProject_BE_adoptEasy.model.Utente;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 public class AdozioneDTO {
 
-    @NotBlank(message = "questo campo è obbligatorio")
-    private LocalDateTime startDate;
+    @NotNull(message = "questo campo è obbligatorio")
+    private LocalDate startDate;
 
     @NotBlank(message = "questo campo è obbligatorio")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @NotBlank(message = "questo campo è obbligatorio")
     private String adoptionNotes;

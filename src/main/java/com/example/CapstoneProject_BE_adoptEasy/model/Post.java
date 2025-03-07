@@ -5,9 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Entity(name = "posts")
 @Data
@@ -47,6 +46,5 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "id_animal")
     private Animale animale;
-
 
 }

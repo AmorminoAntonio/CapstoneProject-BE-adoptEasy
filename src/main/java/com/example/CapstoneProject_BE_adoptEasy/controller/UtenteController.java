@@ -9,6 +9,8 @@ import com.example.CapstoneProject_BE_adoptEasy.payload.request.RegistrationReq;
 import com.example.CapstoneProject_BE_adoptEasy.payload.response.LogResponse;
 import com.example.CapstoneProject_BE_adoptEasy.service.UtenteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -16,7 +18,6 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -30,8 +31,8 @@ public class UtenteController {
     Cloudinary cloudinaryConfig;
 
 
-    @PostMapping("/registration")
-    public ResponseEntity<String> signUp(@Validated @RequestBody RegistrationReq nuovoUtente, BindingResult validazione) {
+    @PostMapping("/registration") // libero a TUTTI
+    public ResponseEntity<?> signUp(@Validated @RequestBody RegistrationReq nuovoUtente, BindingResult validazione) {
 
         if (validazione.hasErrors()) {
             StringBuilder errori = new StringBuilder("Problemi nella validazione dati :\n");
@@ -43,7 +44,6 @@ public class UtenteController {
         }
 
         try {
-
             String messaggio = String.valueOf(utenteService.registrazioneUtente(nuovoUtente));
             return new ResponseEntity<>(messaggio, HttpStatus.OK);
         } catch (UsernameDuplicatedException | EmailDuplicatedException e) {
@@ -51,7 +51,13 @@ public class UtenteController {
         }
     }
 
-    @PostMapping("/login")
+    @GetMapping("/all")
+    public ResponseEntity<Page<RegistrationReq>> getAllUtenti(Pageable pageable) {
+        Page<RegistrationReq> response = utenteService.getAllUtenti(pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/login") // libero a TUTTI
     public ResponseEntity<?> login(@Validated @RequestBody LoginReq loginReq, BindingResult checkValidazione) {
 
         try {
@@ -71,20 +77,24 @@ public class UtenteController {
         } catch (Exception e) {
             return new ResponseEntity<>("Credenziali non valide" + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
-
-    @PatchMapping("/auth/avatar/{idUtente}")
+    @PatchMapping("/adopter/avatar/{idUtente}") // modifica dell' avatar (permesso a livello di user ADOPTER)
     public ResponseEntity<?> cambiaAvatarUtente(@RequestPart("avatar") MultipartFile avatar, @PathVariable long idUtente) {
         try {
             Map mappa = cloudinaryConfig.uploader().upload(avatar.getBytes(), ObjectUtils.emptyMap());
             String urlImage = mappa.get("secure_url").toString();
-            utenteService.updateAvatar(idUtente, urlImage);
+            utenteService.modificaAvatar(idUtente, urlImage);
             return new ResponseEntity<>("Immagine avatar sostituita", HttpStatus.OK);
         } catch (IOException e) {
             throw new RuntimeException("Errore nel caricamento dell'immagine: " + e);
         }
     }
 
+    @DeleteMapping("/admin/delete/{id}") // solo ADMIN
+    public ResponseEntity<String> deleteUtente(@PathVariable Long id) {
+        String response = utenteService.deleteUtente(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
+

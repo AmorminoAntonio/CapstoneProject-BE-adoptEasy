@@ -1,14 +1,10 @@
 package com.example.CapstoneProject_BE_adoptEasy.payload.request;
 
-import com.example.CapstoneProject_BE_adoptEasy.enumerated.RoleType;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class RegistrationReq {
@@ -31,8 +27,6 @@ public class RegistrationReq {
     @Size(min = 3, max = 20)
     private String password;
 
-
-    @NotNull(message = "registration date cannot be null")
     private LocalDate registrationDate;
 
     @NotBlank(message = "phone: questo campo è obbligatorio")
@@ -41,7 +35,8 @@ public class RegistrationReq {
     @NotBlank(message = "address: questo campo è obbligatorio")
     private String address;
 
-    private RoleType role;
+    private String role;
 
+    @URL(protocol = "https")
     private String avatarUtente;
 }

@@ -33,7 +33,7 @@ public class Animale {
     @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AnimalStatusType status;
 
     @Column(nullable = false)

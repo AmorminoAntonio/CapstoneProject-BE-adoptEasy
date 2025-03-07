@@ -1,6 +1,5 @@
 package com.example.CapstoneProject_BE_adoptEasy.model;
 
-import com.example.CapstoneProject_BE_adoptEasy.enumerated.RoleType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,8 +43,7 @@ public class Utente {
     @Column(nullable = false)
     private String address;
 
-    @Enumerated(EnumType.STRING)
-    private RoleType role;
+    private String role;
 
     private String avatarUtente;
 

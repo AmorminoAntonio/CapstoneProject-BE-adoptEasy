@@ -1,6 +1,5 @@
 package com.example.CapstoneProject_BE_adoptEasy.security;
 
-import com.example.CapstoneProject_BE_adoptEasy.enumerated.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class WebSecurityConfig {
+
     @Autowired
     CustomUserDetailsService userDetailsService;
 
@@ -27,13 +27,13 @@ public class WebSecurityConfig {
     JwtAuthorizationFilter filtroAutorizzazione;
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     AuthenticationManager gestoreAuth(HttpSecurity httpSecurity) throws Exception {
-        AuthenticationManagerBuilder auth= httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder auth = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         return auth.build();
     }
@@ -49,12 +49,16 @@ public class WebSecurityConfig {
         httpSecurity.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/utente/registration").permitAll()
                         .requestMatchers("/utente/login").permitAll()
-                        .requestMatchers("/utente/auth/**").hasRole(String.valueOf(RoleType.ADOPTER))
-                        .requestMatchers("/utente/admin/**").hasRole(String.valueOf(RoleType.ADMIN)))
-                .sessionManagement(custom->custom.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .requestMatchers("/utente/all").permitAll()
+                        .requestMatchers("/utente/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/utente/adopter/**").hasAuthority("ADOPTER")
+                        .requestMatchers("/adopter/**").hasAuthority("ADOPTER")
+                        .requestMatchers("/utente/volunteer/**").hasAuthority("VOLUNTEER")
+                        .requestMatchers("/volunteer/**").hasAuthority("VOLUNTEER"))
+                .sessionManagement(custom -> custom.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(filtroAutorizzazione, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
-
     }
 }
