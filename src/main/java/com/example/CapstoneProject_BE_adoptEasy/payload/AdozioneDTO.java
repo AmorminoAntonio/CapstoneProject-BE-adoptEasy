@@ -16,21 +16,18 @@ public class AdozioneDTO {
     @NotNull(message = "questo campo è obbligatorio")
     private LocalDate startDate;
 
-    @NotBlank(message = "questo campo è obbligatorio")
     private LocalDate endDate;
 
     @NotBlank(message = "questo campo è obbligatorio")
     private String adoptionNotes;
 
-    @NotBlank(message = "questo campo è obbligatorio")
     private AdoptionStatusType status;
 
-    @NotBlank(message = "questo campo è obbligatorio")
     private Boolean documentsVerified;
 
-    @NotBlank(message = "questo campo è obbligatorio")
-    private Animale animale;
+    @NotNull(message = "questo campo è obbligatorio")
+    private long animaleId;
 
-    @NotBlank(message = "questo campo è obbligatorio")
-    private Utente utente;
+    @NotNull(message = "questo campo è obbligatorio")
+    private long utenteId;
 }

@@ -23,14 +23,13 @@ public class Adozione {
     @Column(nullable = false)
     private LocalDate startDate;
 
-    //data fine processo di adozione (presa dell'animale post convalida documenti utente)
-    @Column(nullable = false)
     private LocalDate endDate;
 
     @Column(nullable = false)
     private String adoptionNotes;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AdoptionStatusType status;
 
     @Column(nullable = false)

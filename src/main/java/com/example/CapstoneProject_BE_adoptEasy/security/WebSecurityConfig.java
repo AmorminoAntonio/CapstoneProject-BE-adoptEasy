@@ -47,14 +47,12 @@ public class WebSecurityConfig {
         // Impostazione autorizzazioni sugli accessi
         // REGISTRAZIONE senza autorizzazioni
         httpSecurity.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/utente/registration").permitAll()
-                        .requestMatchers("/utente/login").permitAll()
-                        .requestMatchers("/utente/all").permitAll()
+                        .requestMatchers("/utente/registration", "/utente/login").permitAll()
                         .requestMatchers("/utente/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/utente/adopter/**").hasAuthority("ADOPTER")
-                        .requestMatchers("/adopter/**").hasAuthority("ADOPTER")
                         .requestMatchers("/utente/volunteer/**").hasAuthority("VOLUNTEER")
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/adopter/**").hasAuthority("ADOPTER")
                         .requestMatchers("/volunteer/**").hasAuthority("VOLUNTEER"))
                 .sessionManagement(custom -> custom.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(filtroAutorizzazione, UsernamePasswordAuthenticationFilter.class);

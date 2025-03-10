@@ -6,10 +6,14 @@ import com.example.CapstoneProject_BE_adoptEasy.payload.AnimaleDTO;
 import com.example.CapstoneProject_BE_adoptEasy.repository.AnimaleRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -27,18 +31,26 @@ public class AnimaleService {
     }
 
     // Metodo per ottenere tutti gli animali
-    public List<Animale> getAllAnimals() {
-        List<Animale> animals = animaleRepository.findAll();
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
+    public Page<AnimaleDTO> getAllAnimals(Pageable pageable) {
+        Page<Animale> animals = animaleRepository.findAll(pageable);
+
         if (animals.isEmpty()) {
-            throw new RuntimeException("Nessun animale trovato nel sistema.");
+            throw new RuntimeException("Siamo spiacenti. Nessuna adozione trovata.");
         }
-        return animals;
+
+        List<AnimaleDTO> adoptionDTOList = animals.getContent().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(adoptionDTOList, pageable, animals.getTotalElements());
     }
 
     // Metodo per ottenere un animale tramite ID
-    public Animale getAnimalById(Long id) {
-        return animaleRepository.findById(id)
+    public AnimaleDTO getAnimalById(Long id) {
+        Animale animale = animaleRepository.findById(id)
                 .orElseThrow(() -> new AnimaleFoundException(id));  // Se non trovato, lancia eccezione con ID specifico
+
+        return toDto(animale);
     }
 
     // Metodo per aggiornare un animale, accessibile solo da ADMIN o VOLUNTEER

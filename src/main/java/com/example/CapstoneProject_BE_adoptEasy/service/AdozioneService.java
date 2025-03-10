@@ -1,14 +1,25 @@
 package com.example.CapstoneProject_BE_adoptEasy.service;
 
+import com.example.CapstoneProject_BE_adoptEasy.enumerated.AdoptionStatusType;
 import com.example.CapstoneProject_BE_adoptEasy.model.Adozione;
+import com.example.CapstoneProject_BE_adoptEasy.model.Animale;
+import com.example.CapstoneProject_BE_adoptEasy.model.Utente;
 import com.example.CapstoneProject_BE_adoptEasy.payload.AdozioneDTO;
 import com.example.CapstoneProject_BE_adoptEasy.repository.AdozioneRepository;
+import com.example.CapstoneProject_BE_adoptEasy.repository.AnimaleRepository;
+import com.example.CapstoneProject_BE_adoptEasy.repository.UtenteRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -17,47 +28,66 @@ public class AdozioneService {
     @Autowired
     private AdozioneRepository adoptionRepository;
 
-    // Metodo per registrare una nuova adozione, accessibile solo da ADMIN o VOLUNTEER
+    @Autowired
+    private AnimaleRepository animaleRepository;
+
+    @Autowired
+    private UtenteRepository utenteRepository;
+
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public Adozione registerAdozione(AdozioneDTO adoptionDTO) {
-        // Convertiamo il DTO in Entity
         Adozione adoption = toEntity(adoptionDTO);
-        // Salviamo l'entità nel database
         return adoptionRepository.save(adoption);
     }
 
-    // Metodo per ottenere tutte le adozioni
-    public List<Adozione> getAllAdozioni() {
-        List<Adozione> adoptions = adoptionRepository.findAll();
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
+    public Page<AdozioneDTO> getAllAdozioni(Pageable pageable) {
+        Page<Adozione> adoptions = adoptionRepository.findAll(pageable);
+
         if (adoptions.isEmpty()) {
-            throw new RuntimeException("Nessuna adozione trovata.");
+            throw new RuntimeException("Siamo spiacenti. Nessuna adozione trovata.");
         }
-        return adoptions;
+
+        List<AdozioneDTO> adoptionDTOList = adoptions.getContent().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(adoptionDTOList, pageable, adoptions.getTotalElements());
     }
 
-    // Metodo per ottenere un'adozione tramite ID
-    public Adozione getAdozioneById(Long id) {
-        return adoptionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Adozione con ID " + id + " non trovata."));
-    }
 
-    // Metodo per aggiornare un'adozione
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public Adozione updateAdozione(Long id, AdozioneDTO adoptionDTO) {
         Adozione existingAdozione = adoptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Adozione con ID " + id + " non trovata."));
 
-        // Aggiorniamo i dettagli dell'adozione
-        existingAdozione.setStartDate(adoptionDTO.getStartDate());
-        existingAdozione.setEndDate(adoptionDTO.getEndDate());
+        if (AdoptionStatusType.COMPLETED.equals(existingAdozione.getStatus())) {
+            throw new RuntimeException("L'adozione è già completata e non può essere modificata.");
+        }
+
         existingAdozione.setAdoptionNotes(adoptionDTO.getAdoptionNotes());
         existingAdozione.setStatus(adoptionDTO.getStatus());
         existingAdozione.setDocumentsVerified(adoptionDTO.getDocumentsVerified());
-        existingAdozione.setAnimale(adoptionDTO.getAnimale());
-        existingAdozione.setUtente(adoptionDTO.getUtente());
 
-        // Salviamo l'adozione aggiornata
+        if (adoptionDTO.getDocumentsVerified() && AdoptionStatusType.PENDING.equals(existingAdozione.getStatus())) {
+            existingAdozione.setStatus(AdoptionStatusType.APPROVED);
+        }
+
+        if (AdoptionStatusType.APPROVED.equals(existingAdozione.getStatus()) && existingAdozione.getStartDate() != null) {
+            existingAdozione.setStatus(AdoptionStatusType.COMPLETED);
+            existingAdozione.setEndDate(LocalDate.now());
+        }
+
         return adoptionRepository.save(existingAdozione);
+    }
+
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
+    public AdozioneDTO getAdozioneById(Long id) {
+        Adozione adozione = adoptionRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("elemento non trovato con id: " + id));  // Se non trovato, lancia eccezione con ID specifico
+
+        return toDto(adozione);
     }
 
     // Metodo per eliminare un'adozione
@@ -71,13 +101,20 @@ public class AdozioneService {
     // Metodo di conversione da DTO a Entity
     public Adozione toEntity(AdozioneDTO adoptionDTO) {
         Adozione adoption = new Adozione();
-        adoption.setStartDate(adoptionDTO.getStartDate());
-        adoption.setEndDate(adoptionDTO.getEndDate());
+        adoption.setStartDate(LocalDate.now());
+        adoption.setEndDate(null);
         adoption.setAdoptionNotes(adoptionDTO.getAdoptionNotes());
-        adoption.setStatus(adoptionDTO.getStatus());
-        adoption.setDocumentsVerified(adoptionDTO.getDocumentsVerified());
-        adoption.setAnimale(adoptionDTO.getAnimale());
-        adoption.setUtente(adoptionDTO.getUtente());
+        adoption.setStatus(AdoptionStatusType.PENDING);
+        adoption.setDocumentsVerified(false);
+
+        Animale animale = animaleRepository.findById(adoptionDTO.getAnimaleId())
+                .orElseThrow(() -> new RuntimeException("Animale non trovato con ID " + adoptionDTO.getAnimaleId()));
+
+        Utente utente = utenteRepository.findById(adoptionDTO.getUtenteId())
+                .orElseThrow(() -> new RuntimeException("Utente non trovato con ID " + adoptionDTO.getUtenteId()));
+
+        adoption.setAnimale(animale);
+        adoption.setUtente(utente);
         return adoption;
     }
 
@@ -89,8 +126,8 @@ public class AdozioneService {
         adoptionDTO.setAdoptionNotes(adoption.getAdoptionNotes());
         adoptionDTO.setStatus(adoption.getStatus());
         adoptionDTO.setDocumentsVerified(adoption.getDocumentsVerified());
-        adoptionDTO.setAnimale(adoption.getAnimale());
-        adoptionDTO.setUtente(adoption.getUtente());
+        adoptionDTO.setAnimaleId(adoption.getAnimale().getId_animal());
+        adoptionDTO.setUtenteId(adoption.getUtente().getId_user());
         return adoptionDTO;
     }
 }

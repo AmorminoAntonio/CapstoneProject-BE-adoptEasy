@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -140,6 +141,7 @@ public class UtenteService {
 
     // ELIMINA UN UTENTE (SOLO ADMIN)
     // Solo gli Admin possono eliminare utenti
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String deleteUtente(Long id) {
         Utente utente = utenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));

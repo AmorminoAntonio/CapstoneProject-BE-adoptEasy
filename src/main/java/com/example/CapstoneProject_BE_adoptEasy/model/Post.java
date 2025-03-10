@@ -30,15 +30,6 @@ public class Post {
     @Column(nullable = false)
     private String image;
 
-    @Column(nullable = false)
-    private PostStatusType status;
-
-    @Column(nullable = true)
-    private LocalDate lastModified;
-
-    @Column(nullable = false)
-    private Boolean visible;
-
     @ManyToOne
     @JoinColumn(name = "id_user")
     private Utente utente;

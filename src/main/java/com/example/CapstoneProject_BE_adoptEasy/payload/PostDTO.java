@@ -4,10 +4,11 @@ import com.example.CapstoneProject_BE_adoptEasy.enumerated.PostStatusType;
 import com.example.CapstoneProject_BE_adoptEasy.model.Animale;
 import com.example.CapstoneProject_BE_adoptEasy.model.Utente;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-
+import org.hibernate.validator.constraints.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Data
 public class PostDTO {
@@ -21,19 +22,11 @@ public class PostDTO {
     private String content;
 
     @NotBlank(message = "questo campo è obbligatorio")
+    @URL(protocol = "https")
     private String image;
 
-    @NotBlank(message = "questo campo è obbligatorio")
-    private PostStatusType status;
+    private long utenteID;
 
-    private LocalDate lastModified;
+    private long animaleID;
 
-    @NotBlank(message = "questo campo è obbligatorio")
-    private Boolean visible;
-
-    @NotBlank(message = "questo campo è obbligatorio")
-    private Utente utente;
-
-    @NotBlank(message = "questo campo è obbligatorio")
-    private Animale animale;
 }

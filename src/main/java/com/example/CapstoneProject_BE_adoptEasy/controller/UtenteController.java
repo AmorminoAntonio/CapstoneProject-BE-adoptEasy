@@ -51,7 +51,7 @@ public class UtenteController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/admin/all")
     public ResponseEntity<Page<RegistrationReq>> getAllUtenti(Pageable pageable) {
         Page<RegistrationReq> response = utenteService.getAllUtenti(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
