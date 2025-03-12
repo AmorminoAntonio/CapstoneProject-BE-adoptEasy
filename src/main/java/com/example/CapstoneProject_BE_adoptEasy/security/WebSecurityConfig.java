@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -42,7 +43,15 @@ public class WebSecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(c -> c.configurationSource(cors -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.addAllowedOrigin("http://localhost:5173"); //URL del frontend
+            config.addAllowedMethod("*"); // Consente tutti i metodi
+            config.addAllowedHeader("*"); // Consente tutte le intestazioni
+            return config;
+        }));
+        httpSecurity.csrf(csrf -> csrf.disable());
+        ;
 
         // Impostazione autorizzazioni sugli accessi
         // REGISTRAZIONE senza autorizzazioni
