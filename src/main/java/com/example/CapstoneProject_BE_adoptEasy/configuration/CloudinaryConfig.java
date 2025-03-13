@@ -16,5 +16,6 @@ public class CloudinaryConfig {
         config.put("api_key", "344699519273455");
         config.put("api_secret", "5b35iMkqJF584m7T3HXauOenX58");
         return new Cloudinary(config);
+        /*modifica per aggiornare branch*/
     }
 }
