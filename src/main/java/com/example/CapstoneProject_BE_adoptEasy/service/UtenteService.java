@@ -167,7 +167,7 @@ public class UtenteService {
         utente.setFirstName(request.getFirstName());
         utente.setLastName(request.getLastName());
         utente.setUsername(request.getUsername());
-        utente.setAvatarUtente(request.getAvatarUtente());
+        utente.setAvatarUtente("https://cdn-icons-png.flaticon.com/128/15315/15315520.png");
         utente.setAddress(request.getAddress());
         utente.setPhone(request.getPhone());
         utente.setRegistrationDate(LocalDate.now());

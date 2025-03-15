@@ -18,7 +18,9 @@ import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -33,23 +35,35 @@ public class UtenteController {
 
     @PostMapping("/registration") // libero a TUTTI
     public ResponseEntity<?> signUp(@Validated @RequestBody RegistrationReq nuovoUtente, BindingResult validazione) {
-
         if (validazione.hasErrors()) {
-            StringBuilder errori = new StringBuilder("Problemi nella validazione dati :\n");
+            // Crea una mappa per i messaggi di errore
+            Map<String, String> errori = new HashMap<>();
 
             for (ObjectError errore : validazione.getAllErrors()) {
-                errori.append(errore.getDefaultMessage()).append("\n");
+                errori.put("errore", errore.getDefaultMessage()); // Puoi anche usare un'altra struttura a seconda delle tue necessità
             }
-            return new ResponseEntity<>(errori.toString(), HttpStatus.BAD_REQUEST);
+
+            // Restituisci la mappa come risposta JSON con errore 400
+            return new ResponseEntity<>(errori, HttpStatus.BAD_REQUEST);
         }
 
         try {
             String messaggio = String.valueOf(utenteService.registrazioneUtente(nuovoUtente));
-            return new ResponseEntity<>(messaggio, HttpStatus.OK);
+
+            // Restituisci messaggio in formato JSON
+            Map<String, String> successMessage = new HashMap<>();
+            successMessage.put("message", messaggio);
+
+            return new ResponseEntity<>(successMessage, HttpStatus.OK);
         } catch (UsernameDuplicatedException | EmailDuplicatedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            // Restituisci l'errore come oggetto JSON
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @GetMapping("/admin/all")
     public ResponseEntity<Page<RegistrationReq>> getAllUtenti(Pageable pageable) {

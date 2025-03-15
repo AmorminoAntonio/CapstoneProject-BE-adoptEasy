@@ -56,7 +56,7 @@ public class AdozioneService {
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER') or hasAuthority('ADOPTER')")
     public Adozione updateAdozione(Long id, AdozioneDTO adoptionDTO) {
         Adozione existingAdozione = adoptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Adozione con ID " + id + " non trovata."));
