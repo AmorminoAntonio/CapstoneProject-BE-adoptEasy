@@ -32,17 +32,17 @@ public class AnimaleService {
 
     // Metodo per ottenere tutti gli animali
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
-    public Page<AnimaleDTO> getAllAnimals(Pageable pageable) {
+    public PageImpl<AnimaleDTO> getAllAnimals(Pageable pageable) {
         Page<Animale> animals = animaleRepository.findAll(pageable);
 
         if (animals.isEmpty()) {
             throw new RuntimeException("Siamo spiacenti. Nessuna adozione trovata.");
         }
 
-        List<AnimaleDTO> adoptionDTOList = animals.getContent().stream()
+        List<AnimaleDTO> animaleList = animals.getContent().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
-        return new PageImpl<>(adoptionDTOList, pageable, animals.getTotalElements());
+        return new PageImpl<>(animaleList, pageable, animals.getTotalElements());
     }
 
     // Metodo per ottenere un animale tramite ID
@@ -100,6 +100,7 @@ public class AnimaleService {
     // Metodo di conversione da Entity a DTO
     public AnimaleDTO toDto(Animale animal) {
         AnimaleDTO registrationDto = new AnimaleDTO();
+        registrationDto.setId(animal.getId_animal());
         registrationDto.setSpecies(animal.getSpecies());
         registrationDto.setBreed(animal.getBreed());
         registrationDto.setFoundDate(animal.getFoundDate());

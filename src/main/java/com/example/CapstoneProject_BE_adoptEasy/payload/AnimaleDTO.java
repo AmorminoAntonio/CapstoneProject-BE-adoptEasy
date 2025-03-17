@@ -7,10 +7,10 @@ import lombok.Data;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class AnimaleDTO {
+    private long id;
 
     @NotBlank(message = "questo campo è obbligatorio")
     private String species;
@@ -39,4 +39,5 @@ public class AnimaleDTO {
 
     @NotBlank(message = "questo campo è obbligatorio")
     private String observation;
+
 }

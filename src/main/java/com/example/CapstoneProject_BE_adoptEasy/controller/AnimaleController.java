@@ -83,23 +83,43 @@ public class AnimaleController {
     }
 
     @PutMapping("/admin/animal/update/{id}")
-    public Animale adminUpdateAnimal(@PathVariable Long id, @RequestBody AnimaleDTO animaleDTO) {
-        return animaleService.updateAnimal(id, animaleDTO);
+    public ResponseEntity<Animale> updateAnimal(@PathVariable Long id, @RequestBody AnimaleDTO animaleDTO) {
+        try {
+            Animale updatedAnimal = animaleService.updateAnimal(id, animaleDTO);
+            return new ResponseEntity<>(updatedAnimal, HttpStatus.OK); // Restituisce l'animale aggiornato con status 200 OK
+        } catch (AnimaleFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Se l'animale non viene trovato, restituisce 404
+        }
     }
 
     @PutMapping("/volunteer/animal/update/{id}")
-    public Animale volUpdateAnimal(@PathVariable Long id, @RequestBody AnimaleDTO animaleDTO) {
-        return animaleService.updateAnimal(id, animaleDTO);
+    public ResponseEntity<Animale> VolUpdateAnimal(@PathVariable Long id, @RequestBody AnimaleDTO animaleDTO) {
+        try {
+            Animale updatedAnimal = animaleService.updateAnimal(id, animaleDTO);
+            return new ResponseEntity<>(updatedAnimal, HttpStatus.OK); // Restituisce l'animale aggiornato con status 200 OK
+        } catch (AnimaleFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // Se l'animale non viene trovato, restituisce 404
+        }
     }
 
 
     @DeleteMapping("/admin/animal/delete/{id}")
-    public void admDeleteAnimal(@PathVariable Long id) {
-        animaleService.deleteAnimal(id);
+    public ResponseEntity<?> deleteAnimal(@PathVariable Long id) {
+        try {
+            animaleService.deleteAnimal(id);
+            return new ResponseEntity<>("Animale cancellato con successo", HttpStatus.NO_CONTENT); // Restituisce status 204 NO CONTENT
+        } catch (AnimaleFoundException e) {
+            return new ResponseEntity<>("Animale non trovato", HttpStatus.NOT_FOUND); // Se l'animale non viene trovato, restituisce 404
+        }
     }
 
     @DeleteMapping("/volunteer/animal/delete/{id}")
-    public void volDeleteAnimal(@PathVariable Long id) {
-        animaleService.deleteAnimal(id);
+    public ResponseEntity<?> VolDeleteAnimal(@PathVariable Long id) {
+        try {
+            animaleService.deleteAnimal(id);
+            return new ResponseEntity<>("Animale cancellato con successo", HttpStatus.NO_CONTENT); // Restituisce status 204 NO CONTENT
+        } catch (AnimaleFoundException e) {
+            return new ResponseEntity<>("Animale non trovato", HttpStatus.NOT_FOUND); // Se l'animale non viene trovato, restituisce 404
+        }
     }
 }
