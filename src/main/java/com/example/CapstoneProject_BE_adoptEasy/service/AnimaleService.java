@@ -45,6 +45,20 @@ public class AnimaleService {
         return new PageImpl<>(animaleList, pageable, animals.getTotalElements());
     }
 
+
+    public PageImpl<AnimaleDTO> getAllAnimalsFree(Pageable pageable) {
+        Page<Animale> animals = animaleRepository.findAll(pageable);
+
+        if (animals.isEmpty()) {
+            throw new RuntimeException("Siamo spiacenti. Nessuna adozione trovata.");
+        }
+
+        List<AnimaleDTO> animaleList = animals.getContent().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(animaleList, pageable, animals.getTotalElements());
+    }
+
     // Metodo per ottenere un animale tramite ID
     public AnimaleDTO getAnimalById(Long id) {
         Animale animale = animaleRepository.findById(id)

@@ -53,7 +53,7 @@ public class AnimaleController {
     @GetMapping("/adopter/animal/all")
     public ResponseEntity<Page<AnimaleDTO>> getAllAnimals(Pageable pageable) {
         try {
-            Page<AnimaleDTO> animals = animaleService.getAllAnimals(pageable);
+            Page<AnimaleDTO> animals = animaleService.getAllAnimalsFree(pageable);
             return new ResponseEntity<>(animals, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
