@@ -36,7 +36,7 @@ public class AnimaleService {
         Page<Animale> animals = animaleRepository.findAll(pageable);
 
         if (animals.isEmpty()) {
-            throw new RuntimeException("Siamo spiacenti. Nessuna adozione trovata.");
+            throw new RuntimeException("Siamo spiacenti. Nessuna animale trovato.");
         }
 
         List<AnimaleDTO> animaleList = animals.getContent().stream()

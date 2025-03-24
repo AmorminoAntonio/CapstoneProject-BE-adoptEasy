@@ -35,12 +35,13 @@ public class Adozione {
     @Column(nullable = false)
     private Boolean documentsVerified;
 
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_animal")
     private Animale animale;
 
-    @ManyToOne
-    @JoinColumn(name = "id_user") //(adottante)
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "id_user") // adottante
     private Utente utente;
 
 

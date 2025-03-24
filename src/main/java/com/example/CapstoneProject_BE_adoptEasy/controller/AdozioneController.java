@@ -30,7 +30,7 @@ public class AdozioneController {
     }
 
     @PostMapping("/admin/adozioni/register")
-    public ResponseEntity<String> admRegisterAdozione(@RequestBody AdozioneDTO adoptionDTO) {
+    public ResponseEntity<?> admRegisterAdozione(@RequestBody AdozioneDTO adoptionDTO) {
         try {
             Adozione adoption = adozioneService.registerAdozione(adoptionDTO);
             return ResponseEntity.status(HttpStatus.CREATED)

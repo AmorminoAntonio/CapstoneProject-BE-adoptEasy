@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @Data
 public class RegistrationReq {
 
+    private long id;
+
     @NotBlank(message = "Username è un campo obbligatorio")
     @Size(min = 3, max = 15)
     private String username;

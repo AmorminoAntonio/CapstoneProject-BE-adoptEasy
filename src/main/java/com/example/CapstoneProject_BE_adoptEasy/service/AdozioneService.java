@@ -56,7 +56,7 @@ public class AdozioneService {
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER') or hasAuthority('ADOPTER')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public Adozione updateAdozione(Long id, AdozioneDTO adoptionDTO) {
         Adozione existingAdozione = adoptionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Adozione con ID " + id + " non trovata."));
@@ -64,17 +64,29 @@ public class AdozioneService {
         if (AdoptionStatusType.COMPLETED.equals(existingAdozione.getStatus())) {
             throw new RuntimeException("L'adozione è già completata e non può essere modificata.");
         }
+        if (AdoptionStatusType.REJECTED.equals(existingAdozione.getStatus())) {
+            throw new RuntimeException("Ci dispiace,  l'adozione è stata rifiutata.");
+        }
 
+        // Imposta le nuove note e verifica se i documenti sono verificati
         existingAdozione.setAdoptionNotes(adoptionDTO.getAdoptionNotes());
         existingAdozione.setStatus(adoptionDTO.getStatus());
         existingAdozione.setDocumentsVerified(adoptionDTO.getDocumentsVerified());
 
+        // Gestione dello stato APPROVED
         if (adoptionDTO.getDocumentsVerified() && AdoptionStatusType.PENDING.equals(existingAdozione.getStatus())) {
             existingAdozione.setStatus(AdoptionStatusType.APPROVED);
         }
 
+        // Gestione dello stato COMPLETED
         if (AdoptionStatusType.APPROVED.equals(existingAdozione.getStatus()) && existingAdozione.getStartDate() != null) {
             existingAdozione.setStatus(AdoptionStatusType.COMPLETED);
+            existingAdozione.setEndDate(LocalDate.now());
+        }
+
+        // Gestione dello stato REJECTED
+        if (AdoptionStatusType.REJECTED.equals(adoptionDTO.getStatus())) {
+            existingAdozione.setStatus(AdoptionStatusType.REJECTED);
             existingAdozione.setEndDate(LocalDate.now());
         }
 
@@ -104,30 +116,42 @@ public class AdozioneService {
         adoption.setStartDate(LocalDate.now());
         adoption.setEndDate(null);
         adoption.setAdoptionNotes(adoptionDTO.getAdoptionNotes());
-        adoption.setStatus(AdoptionStatusType.PENDING);
-        adoption.setDocumentsVerified(false);
+        adoption.setStatus(AdoptionStatusType.PENDING);  // Stato iniziale PENDING
+        adoption.setDocumentsVerified(false);  // Imposta i documenti come non verificati
 
-        Animale animale = animaleRepository.findById(adoptionDTO.getAnimaleId())
+        // Recupera Animale e Utente tramite gli ID
+        Animale animale = animaleRepository.findById(adoptionDTO.getAnimaleId().getId_animal())
                 .orElseThrow(() -> new RuntimeException("Animale non trovato con ID " + adoptionDTO.getAnimaleId()));
 
-        Utente utente = utenteRepository.findById(adoptionDTO.getUtenteId())
+        Utente utente = utenteRepository.findById(adoptionDTO.getUtenteId().getId_user())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato con ID " + adoptionDTO.getUtenteId()));
 
         adoption.setAnimale(animale);
         adoption.setUtente(utente);
+
         return adoption;
     }
+
 
     // Metodo di conversione da Entity a DTO
     public AdozioneDTO toDto(Adozione adoption) {
         AdozioneDTO adoptionDTO = new AdozioneDTO();
+        adoptionDTO.setId(adoption.getId_adoption());
         adoptionDTO.setStartDate(adoption.getStartDate());
         adoptionDTO.setEndDate(adoption.getEndDate());
         adoptionDTO.setAdoptionNotes(adoption.getAdoptionNotes());
         adoptionDTO.setStatus(adoption.getStatus());
         adoptionDTO.setDocumentsVerified(adoption.getDocumentsVerified());
-        adoptionDTO.setAnimaleId(adoption.getAnimale().getId_animal());
-        adoptionDTO.setUtenteId(adoption.getUtente().getId_user());
+
+        // Imposta gli ID di Animale e Utente, non gli oggetti completi
+        if (adoption.getAnimale() != null) {
+            adoptionDTO.setAnimaleId(adoption.getAnimale());
+        }
+
+        if (adoption.getUtente() != null) {
+            adoptionDTO.setUtenteId(adoption.getUtente());
+        }
+
         return adoptionDTO;
     }
 }

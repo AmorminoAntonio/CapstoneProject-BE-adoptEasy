@@ -5,6 +5,7 @@ import com.example.CapstoneProject_BE_adoptEasy.payload.request.RegistrationReq;
 import com.example.CapstoneProject_BE_adoptEasy.payload.response.LogResponse;
 import com.example.CapstoneProject_BE_adoptEasy.repository.UtenteRepository;
 import com.example.CapstoneProject_BE_adoptEasy.security.JwtUtil;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -177,6 +178,7 @@ public class UtenteService {
     // Metodo di conversione dell'utente in DTO per la registrazione
     public RegistrationReq utente_registrazioneRequest(Utente utente) {
         RegistrationReq registrationReq = new RegistrationReq();
+        registrationReq.setId(utente.getId_user());
         registrationReq.setEmail(utente.getEmail());
         registrationReq.setFirstName(utente.getFirstName());
         registrationReq.setLastName(utente.getLastName());
@@ -185,6 +187,7 @@ public class UtenteService {
         registrationReq.setAddress(utente.getAddress());
         registrationReq.setPhone(utente.getPhone());
         registrationReq.setRegistrationDate(LocalDate.now());
+        registrationReq.setRole(utente.getRole());
         return registrationReq;
     }
 }

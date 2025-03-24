@@ -60,8 +60,9 @@ public class WebSecurityConfig {
                         .requestMatchers("/utente/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/utente/adopter/**").hasAuthority("ADOPTER")
                         .requestMatchers("/utente/volunteer/**").hasAuthority("VOLUNTEER")
-                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/email/contact").permitAll()
                         .requestMatchers("/adopter/**").permitAll()
+                        .requestMatchers("/admin/**").hasAuthority("ADMIN")
                         .requestMatchers("/volunteer/**").hasAuthority("VOLUNTEER"))
                 .sessionManagement(custom -> custom.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(filtroAutorizzazione, UsernamePasswordAuthenticationFilter.class);

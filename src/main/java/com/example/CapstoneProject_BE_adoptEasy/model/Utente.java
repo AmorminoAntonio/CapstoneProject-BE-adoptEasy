@@ -47,11 +47,11 @@ public class Utente {
 
     private String avatarUtente;
 
-    @OneToMany(mappedBy = "utente") // volontario
+   /* @OneToMany(mappedBy = "utente") // volontario
     private List<Post> posts;
 
     @OneToMany(mappedBy = "utente") // adottante
-    private List<Adozione> adoptions;
+    private List<Adozione> adoptions;*/
 
 
 }

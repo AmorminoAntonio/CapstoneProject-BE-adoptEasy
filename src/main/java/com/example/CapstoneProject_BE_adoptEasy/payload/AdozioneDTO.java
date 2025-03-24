@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class AdozioneDTO {
+    private long id;
 
     @NotNull(message = "questo campo è obbligatorio")
     private LocalDate startDate;
@@ -26,8 +27,8 @@ public class AdozioneDTO {
     private Boolean documentsVerified;
 
     @NotNull(message = "questo campo è obbligatorio")
-    private long animaleId;
+    private Animale animaleId;
 
     @NotNull(message = "questo campo è obbligatorio")
-    private long utenteId;
+    private Utente utenteId;
 }

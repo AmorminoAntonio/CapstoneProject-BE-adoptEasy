@@ -2,6 +2,7 @@ package com.example.CapstoneProject_BE_adoptEasy.model;
 
 
 import com.example.CapstoneProject_BE_adoptEasy.enumerated.AnimalStatusType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,12 +49,12 @@ public class Animale {
     @Column(nullable = false)
     private String observation;
 
-    @OneToMany(mappedBy = "animale")
+   /* @OneToMany(mappedBy = "animale")
     private List<Post> posts;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "animale")
-    private Adozione adoption;
-
+    private Adozione adoption;*/
 
 
 }
