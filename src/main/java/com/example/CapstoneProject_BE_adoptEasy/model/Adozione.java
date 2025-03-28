@@ -38,11 +38,11 @@ public class Adozione {
 
     @OneToOne
     @JoinColumn(name = "id_animal")
-    private Animale animale;
+    private Animale animaleId;
 
     @ManyToOne
     @JoinColumn(name = "id_user") // adottante
-    private Utente utente;
+    private Utente utenteId;
 
 
 }

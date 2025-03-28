@@ -129,8 +129,8 @@ public class AdozioneService {
         Utente utente = utenteRepository.findById(adoptionDTO.getUtenteId().getId_user())
                 .orElseThrow(() -> new RuntimeException("Utente non trovato con ID " + adoptionDTO.getUtenteId()));
 
-        adoption.setAnimale(animale);
-        adoption.setUtente(utente);
+        adoption.setAnimaleId(animale);
+        adoption.setUtenteId(utente);
 
         return adoption;
     }
@@ -147,12 +147,12 @@ public class AdozioneService {
         adoptionDTO.setDocumentsVerified(adoption.getDocumentsVerified());
 
         // Imposta gli ID di Animale e Utente, non gli oggetti completi
-        if (adoption.getAnimale() != null) {
-            adoptionDTO.setAnimaleId(adoption.getAnimale());
+        if (adoption.getAnimaleId() != null) {
+            adoptionDTO.setAnimaleId(adoption.getAnimaleId());
         }
 
-        if (adoption.getUtente() != null) {
-            adoptionDTO.setUtenteId(adoption.getUtente());
+        if (adoption.getUtenteId() != null) {
+            adoptionDTO.setUtenteId(adoption.getUtenteId());
         }
 
         return adoptionDTO;
