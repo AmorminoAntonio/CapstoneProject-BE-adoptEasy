@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 public class AdozioneService {
 
     @Autowired
-    private AdozioneRepository adoptionRepository;
+    private AdozioneRepository adozioneRepository;
 
     @Autowired
     private AnimaleRepository animaleRepository;
@@ -37,13 +38,13 @@ public class AdozioneService {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public Adozione registerAdozione(AdozioneDTO adoptionDTO) {
         Adozione adoption = toEntity(adoptionDTO);
-        return adoptionRepository.save(adoption);
+        return adozioneRepository.save(adoption);
     }
 
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public Page<AdozioneDTO> getAllAdozioni(Pageable pageable) {
-        Page<Adozione> adoptions = adoptionRepository.findAll(pageable);
+        Page<Adozione> adoptions = adozioneRepository.findAll(pageable);
 
         if (adoptions.isEmpty()) {
             throw new RuntimeException("Siamo spiacenti. Nessuna adozione trovata.");
@@ -58,14 +59,16 @@ public class AdozioneService {
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public Adozione updateAdozione(Long id, AdozioneDTO adoptionDTO) {
-        Adozione existingAdozione = adoptionRepository.findById(id)
+        // Recupera l'adozione esistente
+        Adozione existingAdozione = adozioneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Adozione con ID " + id + " non trovata."));
 
+        // Controlla se l'adozione è già completata o rifiutata
         if (AdoptionStatusType.COMPLETED.equals(existingAdozione.getStatus())) {
             throw new RuntimeException("L'adozione è già completata e non può essere modificata.");
         }
         if (AdoptionStatusType.REJECTED.equals(existingAdozione.getStatus())) {
-            throw new RuntimeException("Ci dispiace,  l'adozione è stata rifiutata.");
+            throw new RuntimeException("Ci dispiace, l'adozione è stata rifiutata.");
         }
 
         // Imposta le nuove note e verifica se i documenti sono verificati
@@ -90,13 +93,13 @@ public class AdozioneService {
             existingAdozione.setEndDate(LocalDate.now());
         }
 
-        return adoptionRepository.save(existingAdozione);
+        return adozioneRepository.save(existingAdozione);
     }
 
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
     public AdozioneDTO getAdozioneById(Long id) {
-        Adozione adozione = adoptionRepository.findById(id)
+        Adozione adozione = adozioneRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("elemento non trovato con id: " + id));  // Se non trovato, lancia eccezione con ID specifico
 
         return toDto(adozione);
@@ -105,9 +108,9 @@ public class AdozioneService {
     // Metodo per eliminare un'adozione
     @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteAdozione(Long id) {
-        Adozione adoption = adoptionRepository.findById(id)
+        Adozione adoption = adozioneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Adozione con ID " + id + " non trovata."));
-        adoptionRepository.delete(adoption);
+        adozioneRepository.delete(adoption);
     }
 
     // Metodo di conversione da DTO a Entity

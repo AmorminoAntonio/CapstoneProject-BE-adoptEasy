@@ -1,11 +1,12 @@
 package com.example.CapstoneProject_BE_adoptEasy.service;
 
+import com.example.CapstoneProject_BE_adoptEasy.model.Adozione;
 import com.example.CapstoneProject_BE_adoptEasy.model.Utente;
 import com.example.CapstoneProject_BE_adoptEasy.payload.request.RegistrationReq;
 import com.example.CapstoneProject_BE_adoptEasy.payload.response.LogResponse;
+import com.example.CapstoneProject_BE_adoptEasy.repository.AdozioneRepository;
 import com.example.CapstoneProject_BE_adoptEasy.repository.UtenteRepository;
 import com.example.CapstoneProject_BE_adoptEasy.security.JwtUtil;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -103,7 +104,7 @@ public class UtenteService {
         }
     }
 
-    // Metodo per aggiornare il nome utente
+
     public String updateUsername(String username, long id) {
         Optional<Utente> utenteTrovato = utenteRepository.findById(id);
         Utente user = utenteTrovato.orElseThrow(() -> new RuntimeException("Utente non trovato"));
@@ -112,6 +113,7 @@ public class UtenteService {
         utenteRepository.save(user);
         return "Username aggiornato correttamente a " + username;
     }
+
 
     public void modificaAvatar(long idUtente, String url) {
         Utente utente = utenteRepository.findById(idUtente).orElseThrow();
@@ -140,24 +142,67 @@ public class UtenteService {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('VOLUNTEER')")
+    public String modificaUtenteAdminVolunteer(long idUtente, RegistrationReq updatedUserInfo) {
+        Optional<Utente> utenteOpt = utenteRepository.findById(idUtente);
+
+        if (!utenteOpt.isPresent()) {
+            throw new RuntimeException("Utente non trovato con ID: " + idUtente);
+        }
+
+        Utente utente = utenteOpt.get();
+        utente.setFirstName(updatedUserInfo.getFirstName());
+        utente.setLastName(updatedUserInfo.getLastName());
+        utente.setUsername(updatedUserInfo.getUsername());
+        utente.setEmail(updatedUserInfo.getEmail());
+        utente.setPhone(updatedUserInfo.getPhone());
+        utente.setAddress(updatedUserInfo.getAddress());
+        utenteRepository.save(utente);
+
+        return "Le informazioni dell'utente con ID " + idUtente + " sono state aggiornate.";
+    }
+
+
+
+   /* @PreAuthorize("hasAuthority('ADOPTER')")
+    public String modificaUtenteAdopter(long idUtente, RegistrationReq updatedUserInfo) {
+        // Verifica che l'utente stia modificando solo il proprio profilo
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+
+        Optional<Utente> utenteOpt = utenteRepository.findById(idUtente);
+
+        if (!utenteOpt.isPresent()) {
+            throw new RuntimeException("Utente non trovato con ID: " + idUtente);
+        }
+
+        Utente utente = utenteOpt.get();
+
+        // Verifica che l'utente autenticato sia lo stesso utente che sta cercando di modificare
+        if (!utente.getUsername().equals(currentUsername)) {
+            throw new RuntimeException("Non puoi modificare le informazioni di un altro utente.");
+        }
+
+        // Modifica il proprio profilo
+        utente.setFirstName(updatedUserInfo.getFirstName());
+        utente.setLastName(updatedUserInfo.getLastName());
+        utente.setUsername(updatedUserInfo.getUsername());
+        utente.setEmail(updatedUserInfo.getEmail());
+        utente.setPhone(updatedUserInfo.getPhone());
+        utente.setAddress(updatedUserInfo.getAddress());
+        utente.setAvatarUtente(updatedUserInfo.getAvatarUtente());
+
+        utenteRepository.save(utente);
+        return "Le informazioni del tuo profilo sono state aggiornate.";
+    }*/
+
     // ELIMINA UN UTENTE (SOLO ADMIN)
-    // Solo gli Admin possono eliminare utenti
     @PreAuthorize("hasAuthority('ADMIN')")
     public String deleteUtente(Long id) {
         Utente utente = utenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato con ID: " + id));
         utenteRepository.delete(utente);
         return "Utente con ID: " + id + " eliminato con successo.";
-    }
-
-    // OTTIENI UN UTENTE PER ID (SOLO ADMIN)
-    public RegistrationReq trova_utente(long id) {
-        Optional<Utente> utente = utenteRepository.findById(id);
-        if (utente.isPresent()) {
-            return utente_registrazioneRequest(utente.get());
-        } else {
-            throw new RuntimeException("Cliente non trovato");
-        }
     }
 
 

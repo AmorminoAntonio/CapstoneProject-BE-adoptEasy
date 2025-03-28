@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping
 public class AdozioneController {
@@ -94,6 +97,7 @@ public class AdozioneController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Errore durante l'aggiornamento: " + e.getMessage());
         }
     }
+
 
     // Metodo per eliminare un'adozione
     @DeleteMapping("/admin/adozioni/delete/{id}")

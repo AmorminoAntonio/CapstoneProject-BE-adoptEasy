@@ -64,6 +64,17 @@ public class UtenteController {
         }
     }
 
+    @PutMapping("/admin/update/{id}")
+    public ResponseEntity<String> modificaUtenteAdminVolunteer(@PathVariable long id, @RequestBody RegistrationReq updatedUserInfo) {
+        try {
+            // Invoca il servizio per aggiornare l'utente
+            String responseMessage = utenteService.modificaUtenteAdminVolunteer(id, updatedUserInfo);
+            return ResponseEntity.ok(responseMessage);
+        } catch (RuntimeException e) {
+            // Se c'è un errore (utente non trovato), restituisci un errore
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+    }
 
     @GetMapping("/admin/all")
     public ResponseEntity<Page<RegistrationReq>> getAllUtenti(Pageable pageable) {
