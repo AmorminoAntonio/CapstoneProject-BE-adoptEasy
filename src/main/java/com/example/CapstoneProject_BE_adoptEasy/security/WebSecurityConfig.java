@@ -47,7 +47,7 @@ public class WebSecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.addAllowedOrigin("http://localhost:5173"); //URL del frontend
             config.addAllowedMethod("*"); // Consente tutti i metodi
-            config.addAllowedHeader("*"); // Consente tutte le intestazioni
+            config.addAllowedHeader("*"); // Consente tutte le intestazioni  
             return config;
         }));
         httpSecurity.csrf(csrf -> csrf.disable());
